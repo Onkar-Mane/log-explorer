@@ -1,0 +1,10 @@
+# keep files exactly as they are on every machine (the page starts with a UTF-8 BOM that ASP.NET relies on)
+* -text
+
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary

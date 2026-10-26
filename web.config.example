@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<configuration>
+
+  <appSettings>
+  <!-- ===== Log source directories ===== -->
+  <!-- Error-file folders. One folder, or several separated by ';' (optionally "Label=Path"), e.g.
+       SERVER1=\\SERVER1\D$\Logs\Errors;SERVER2=\\SERVER2\D$\Logs\Errors -->
+  <add key="LogDirectoryPath" value="D:\Logs\Errors" />
+  <add key="Log4NetDirectoryPath" value="D:\Logs\log4net" />
+
+  <!-- ===== Result-size caps (what is returned to the browser) ===== -->
+  <add key="MaxStreamEntries" value="2000" />   <!-- log4net stream rows -->
+  <add key="MaxDetailEntries" value="200" />    <!-- occurrences per error group -->
+  <add key="MaxNotesChars" value="4000" />      <!-- stack-trace chars per entry -->
+
+  <!-- ===== Sign-ins (small shield button in the header) =====
+       Super admin: the Dashboard AND the Settings page (look, rules, folders, limits, status).
+       Admin (for example a team lead): the Dashboard only.
+       Leave a pair empty to switch that sign-in off. A password is plain text, or "sha256:<hex>" to keep it unreadable:
+       PowerShell:  (Get-FileHash -InputStream ([IO.MemoryStream]::new([Text.Encoding]::UTF8.GetBytes('YourPassword'))) -Algorithm SHA256).Hash.ToLower()
+       Usernames ignore capital letters, passwords do not. Five wrong attempts lock that computer out for five minutes.
+       Settings are saved in App_Data\ui-settings.json and activity in App_Data\admin-audit.log, so the site's account
+       needs write access to the App_Data folder (web.config itself is never changed). -->
+  <add key="SuperAdminUsername" value="superadmin" />
+  <add key="SuperAdminPassword" value="" />   <!-- CHANGE: set a strong password, or sha256:<hex> -->
+  <add key="AdminUsername" value="admin" />
+  <add key="AdminPassword" value="" />        <!-- CHANGE: empty switches this sign-in off -->
+
+  <!-- ===== Time zone ===== -->
+  <!-- Offset of the log servers' clock from UTC, in minutes. File names and TimeStamp are SERVER time.
+       Leave empty to use this web server's own offset . Set it only if the log
+       servers differ from the machine running this site, e.g. 330 for IST, -240 for US Eastern in summer. -->
+  <add key="ServerUtcOffsetMinutes" value="" />
+
+  <!-- ===== Background / sync errors (tagged, hidden by default, never skipped when reading) ===== -->
+  <add key="BackgroundLogPageNames" value="SyncService,NightlyImportService" />   <!-- example names -->
+  <add key="BackgroundLogModules" value="Shop_SyncService" />   <!-- example names -->
+  <add key="BackgroundLogAlwaysShowCustomMessages" value="" />
+  <add key="HideBackgroundLogsByDefault" value="true" />
+
+  <!-- Suggestions tab (the super admin can change the first four on the Settings page) -->
+  <add key="SuggestionsEnabled" value="true" />
+  <add key="SuggestionsVisibleToUsers" value="true" />   <!-- false: people only see their own suggestions -->
+  <add key="SuggestionMaxChars" value="1000" />          <!-- details, 100 .. 5000 -->
+  <add key="SuggestionsPerHour" value="5" />             <!-- per computer address -->
+  <add key="SuggestionTitleMaxChars" value="120" />
+  <add key="SuggestionResolveHostNames" value="true" />  <!-- look up the computer name in your internal DNS (needs reverse/PTR records) -->
+  <add key="TrustProxyHeaders" value="false" />          <!-- true only if a proxy in front of IIS sets X-Forwarded-For -->
+  <add key="SuggestionsNeedSignIn" value="true" />          <!-- sending and voting need a user account -->
+  <add key="UserSignUpOpen" value="true" />                 <!-- people may create their own account -->
+  <add key="UserSignUpsPerDayPerComputer" value="3" />
+  <!-- Readable module names, see README: <add key="ModuleDisplayNames" value="Shop_Orders*,OrderService=Order processing" /> -->
+  <add key="UserPasswordMinLength" value="6" />             <!-- 2 .. 64; the super admin can change it in Settings -->
+
+  <!-- ===== Date/range limits (off = unrestricted; turn on to force small queries) ===== -->
+  <add key="EnableTimeLimit" value="false" />
+  <add key="EnableDayLimit" value="false" />
+  <add key="EnableFileLimit" value="true" />
+  <add key="MaxHours" value="4" />
+  <add key="MaxDays" value="2" />
+  <add key="MaxFiles" value="20000" />          <!-- newest in-range files parsed when there is no search term (the page shows a notice if it is hit) -->
+  <add key="MaxSearchFiles" value="30000" />    <!-- newest in-range files whose raw text is searched when a search term is given -->
+  <add key="MaxCachedFiles" value="150000" />   <!-- parsed files kept in memory (about 0.6 KB each, so 150000 is roughly 90 MB). A file never changes, so it is parsed once. When the cache is full the least used quarter is dropped -->
+  <add key="CacheHours" value="12" />           <!-- a remembered file that nobody has used for this many hours is forgotten (memory is also freed whenever IIS recycles the site) -->
+  <add key="DashboardMaxFiles" value="100000" /> <!-- newest files the admin dashboard adds up (it only counts, so it can read far more than the list) -->
+  <add key="DashboardLoadSeconds" value="60" /> <!-- after this long the dashboard stops starting new files and shows what is ready; press Refresh now to continue -->
+  <add key="HealthCriticalPerHour" value="20" /> <!-- the Health view paints an hour red when a module logs at least this many errors in it (amber for any error below that; a day counts twelve times as much) -->
+  <add key="MaxConcurrentLoads" value="3" />    <!-- cold loads / searches running at the same time; other users wait their turn -->
+  <add key="LoadWaitSeconds" value="90" />      <!-- how long a user waits for a turn before seeing a "busy" message -->
+  <add key="MaxRawChars" value="100000" />      <!-- raw file text returned per occurrence -->
+
+  <!-- ===== Scale guards (protect the server when a folder holds lakhs of files) ===== -->
+  <add key="MaxScanFiles" value="300000" />     <!-- hard cap on directory enumeration per request -->
+  <add key="MaxTotalEntries" value="50000" />   <!-- hard cap on entries parsed per request -->
+
+  <!-- ===== Caching (parse once per window, reuse for CacheSeconds) ===== -->
+  <add key="EnableCache" value="true" />
+  <add key="CacheSeconds" value="30" />
+
+  <!-- ===== Diagnostics / debug (KEEP OFF IN PROD) ===== -->
+  <add key="EnableDiagnostics" value="false" /> <!-- shows the on-page diagnostic trace panel -->
+  <add key="EnableDebugLog" value="false" />    <!-- writes a debug.txt line per call; heavy under load -->
+  <add key="DebugLogPath" value="D:\Logs\LogExplorer\debug.txt" />
+</appSettings>
+
+  <system.web>
+    <compilation debug="false" targetFramework="4.0">
+      <assemblies>
+        <add assembly="System.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />   <!-- DPAPI for App_Data/users.dat -->
+      </assemblies>
+    </compilation>
+    <httpRuntime targetFramework="4.0" />
+    <customErrors mode="On" />
+    <sessionState mode="InProc" timeout="30" />
+  </system.web>
+
+  <system.web.extensions>
+    <scripting>
+      <webServices>
+        <jsonSerialization maxJsonLength="50000000" />
+      </webServices>
+    </scripting>
+  </system.web.extensions>
+
+  <system.webServer>
+    <!-- Ensure IIS serves the self-hosted Font Awesome webfonts correctly -->
+    <staticContent>
+      <remove fileExtension=".woff2" />
+      <mimeMap fileExtension=".woff2" mimeType="font/woff2" />
+      <remove fileExtension=".woff" />
+      <mimeMap fileExtension=".woff" mimeType="font/woff" />
+    </staticContent>
+  </system.webServer>
+
+</configuration>

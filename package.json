@@ -1,0 +1,13 @@
+{
+  "name": "logviewer-styles",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Build tooling ONLY (dev-time). Not required on the production server.",
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/input.css -o ./dist/app.css --minify",
+    "watch:css": "tailwindcss -i ./src/input.css -o ./dist/app.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}
